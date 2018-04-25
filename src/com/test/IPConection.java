@@ -14,6 +14,7 @@ public class IPConection {
     public InetAddress getInetAddress(){
 
         try {
+            System.out.println("测试项目提交");
             //获取当前网络的所有网络接口
             Enumeration<NetworkInterface> nif = NetworkInterface.getNetworkInterfaces();
 
