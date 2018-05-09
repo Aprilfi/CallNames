@@ -1,13 +1,8 @@
 package com.view;
 
 import com.inet.DoPort;
-import com.inet.RecieveThread;
-import com.inet.SendThread;
-import javafx.scene.shape.Circle;
 
 import javax.swing.*;
-import javax.swing.event.AncestorEvent;
-import javax.swing.event.AncestorListener;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.RoundRectangle2D;
@@ -37,7 +32,12 @@ public class Transport extends Thread implements ActionListener {
     /*
      * 声明输入框组件
      */
-    private JTextField jtf = new JTextField();
+    private JTextField jtf = new JTextField("port");
+
+    /*
+     * 声明输入框组件
+     */
+    private JTextField jtf_a = new JTextField("ipv4");
 
     /*
      * 声明提示组件
@@ -57,7 +57,7 @@ public class Transport extends Thread implements ActionListener {
     /*
      * 实例化jlabel对象
      */
-    JTextArea jt = new JTextArea("请先点击接收按钮");
+    JTextArea jt = new JTextArea();
 
     /*
      * 声明发送按钮
@@ -69,8 +69,7 @@ public class Transport extends Thread implements ActionListener {
      */
     private CircleButton btn_2 = new CircleButton("接收");
 
-
-    public Transport(){
+    public Transport() throws UnknownHostException {
         //设置窗体大小
         jFrame.setBounds(0,0,320,230);
         //设置面板布局
@@ -109,9 +108,14 @@ public class Transport extends Thread implements ActionListener {
         jt.setForeground(Color.white);
         DoPort doPort = new DoPort();
         port = doPort.getDoPort();
-        jt.append("你的可用端口为："+port);
+        //获取客户端局域网IP地址
+        InetAddress host = InetAddress.getLocalHost();
+
+        String IPAddress = host.getHostAddress();
+        jt.append("端口为："+port+"；地址:"+IPAddress);
 
         jtf.setBounds(40,70,100,30);
+        jtf_a.setBounds(180,70,100,30);
 
 
         tips_1.addActionListener(new ActionListener() {
@@ -158,6 +162,7 @@ public class Transport extends Thread implements ActionListener {
         jFrame.add(btn_1);
         jFrame.add(btn_2);
         jFrame.add(jtf);
+        jFrame.add(jtf_a);
         jFrame.add(jt);
 
         btn_1.addActionListener(this);
@@ -168,6 +173,7 @@ public class Transport extends Thread implements ActionListener {
     public void actionPerformed(ActionEvent e) {
             if(e.getSource() == btn_1){
                 port = Integer.parseInt(jtf.getText());
+                String IPAddress = jtf_a.getText();
                 System.out.println(port);
                 //实例化文件选择组件
                 JFileChooser jfc=new JFileChooser();
@@ -183,10 +189,11 @@ public class Transport extends Thread implements ActionListener {
                 jt.append("预计发送时长："+second+"s");
                 try {
                     //选择与之匹配的端口，建立客户端
-                    //获取当前局域网IP地址
-                    InetAddress id = getInetAddress();
+                    //获取客户端局域网IP地址
+                    /**InetAddress host = InetAddress.getLocalHost();
 
-                    String IPAddress = id.getHostAddress();
+                    String IPAddress = host.getHostAddress();**/
+                    System.out.println(IPAddress);
                     //创建套接字对象
                     Socket socket = new Socket(IPAddress,port);
                     //读取文件
@@ -337,7 +344,12 @@ public class Transport extends Thread implements ActionListener {
         EventQueue.invokeLater(new Runnable() {
             @Override
             public void run() {
-                Transport ts = new Transport();
+                Transport ts = null;
+                try {
+                    ts = new Transport();
+                } catch (UnknownHostException e) {
+                    e.printStackTrace();
+                }
                 com.sun.awt.AWTUtilities.setWindowShape(
                         //窗口圆角设置
                         ts.jFrame,new RoundRectangle2D.Double(

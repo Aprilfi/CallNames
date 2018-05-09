@@ -5,6 +5,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.geom.RoundRectangle2D;
+import java.net.UnknownHostException;
 
 
 /**
@@ -86,7 +87,12 @@ public class Chose implements ActionListener {
                 EventQueue.invokeLater(new Runnable() {
                     @Override
                     public void run() {
-                        Transport ts = new Transport();
+                        Transport ts = null;
+                        try {
+                            ts = new Transport();
+                        } catch (UnknownHostException e1) {
+                            e1.printStackTrace();
+                        }
                         com.sun.awt.AWTUtilities.setWindowShape(
                                 //窗口圆角设置
                                 ts.jFrame,new RoundRectangle2D.Double(
